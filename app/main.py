@@ -1,12 +1,12 @@
 import asyncio
 import os
+import subprocess
 
 import zendriver as zd
 
 
 async def start_browser() -> zd.Browser:
     browser = await zd.start(
-        browser_executable_path="/usr/bin/chromium",
         # use wayland for rendering instead of default X11 backend
         browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland"],
     )
@@ -27,8 +27,17 @@ async def get_browserscan_bot_detection_results(page: zd.Tab) -> str:
 
 async def main() -> None:
     print(f"Zendriver Docker demo (zendriver {zd.__version__})")
+    chrome_version = " ".join(
+        (
+            subprocess.run(
+                ["google-chrome-stable", "--version"], stdout=subprocess.PIPE
+            )
+            .stdout.decode("utf-8")
+            .split(" ")[:3]
+        )
+    )
     print(
-        f"Running on {os.uname().machine} ({os.uname().sysname} {os.uname().release})\n"
+        f"{chrome_version} {os.uname().machine} ({os.uname().sysname} {os.uname().release})\n"
     )
 
     print("Starting browser...")
@@ -56,6 +65,7 @@ async def main() -> None:
             "When you are done, press Ctrl+C to exit the demo."
         )
     )
+    await asyncio.Future()  # wait forever
 
 
 if __name__ == "__main__":
