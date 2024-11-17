@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        PUID: 1000
+        PGID: 1000
+        VIDEO_GROUP_GID: 107
+    ports:
+      - 5910:5910
+    volumes:
+      - swayvnc-wayvnc-certs:/certs
+    environment:
+      - SWAY_RESOLUTION=1920x1080
+      - WAYVNC_PORT=5910
+      - WAYVNC_ENABLE_AUTH=true
+      - WAYVNC_USERNAME=wayvnc
+      - WAYVNC_PASSWORD=wayvnc
+    privileged: true
+    devices:
+      - "/dev/dri/renderD128:/dev/dri/renderD128"
+
+volumes:
+  swayvnc-wayvnc-certs:
