@@ -41,7 +41,7 @@ After forking or cloning the repository, you may need to adjust the configuratio
 2. Once you have your desired rendering node, determine the GID of the group which owns it.
 
    ```
-   $ stat /dev/dri/renderD128 "%G %g"
+   $ stat /dev/dri/renderD128 -c "%G %g"
    render 107
    ```
 
