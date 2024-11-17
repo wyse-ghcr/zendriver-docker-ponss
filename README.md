@@ -6,6 +6,8 @@ This repository demonstrates running [Zendriver](https://github.com/stephanlensk
 
 This deployment method is ideal for running Zendriver on a headless server, as it allows Chrome to run on an entirely virtual display, accessible via VNC, and does not require any existing graphical session on the host.
 
+Based on [`stephanlensky/swayvnc-chrome`](https://github.com/stephanlensky/swayvnc-chrome).
+
 **Linux-only.**
 
 ## How to use this repository
@@ -82,6 +84,8 @@ After completing the [First-time setup](#first-time-setup), start the app with [
 ```
 docker compose up --build app
 ```
+
+This will automatically launch a VNC server which can be used to monitor or debug the running browser instance. To connect to it, use a VNC client (such as [RealVNC](https://www.realvnc.com/en/connect/download/viewer/) for Windows) and connect to `localhost:5910` using the credentials defined in [`docker-compose.yml`](https://github.com/stephanlensky/zendriver-docker/blob/main/docker-compose.yml).
 
 ### Linting/formatting
 
