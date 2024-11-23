@@ -47,17 +47,9 @@ After forking or cloning the repository, you may need to adjust the configuratio
 
    On my Debian system, this file is owned by the `render` group, which has a GID of 107.
 
-3. In [`docker-compose.yml`](https://github.com/stephanlensky/zendriver-docker/blob/main/docker-compose.yml), make the following two changes:
+3. In [`docker-compose.yml`](https://github.com/stephanlensky/zendriver-docker/blob/main/docker-compose.yml), under `environment`, update `RENDER_GROUP_GID=107` to the GID you found in step 2.
 
-   1. Under `devices`, update the entry to point to the `/dev/dri/renderDXXX` device you found in step 1. Both parts of the string should be updated, so for example if your device is `/dev/dri/renderD129`, the new entry should read
-
-      ```
-      - "/dev/dri/renderD129:/dev/dri/renderD129"
-      ```
-
-   2. Under `environment`, update `RENDER_GROUP_GID=107` to the GID you found in step 2.
-
-After making these changes, you should be able to run the demo app with
+After making this change, you should be able to run the demo app with
 
 ```
 docker compose up --build app
