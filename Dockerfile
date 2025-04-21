@@ -25,10 +25,10 @@ RUN if [ "$ENABLE_XWAYLAND" = "true" ]; then \
     /home/$DOCKER_USER/.config/sway/config; \
     fi
 
-ARG WAYVNC_UNSUPPORTED_GPU
+ARG SWAY_UNSUPPORTED_GPU
 
 # add `--unsupported-gpu` flag to sway command
-RUN if [ "$WAYVNC_UNSUPPORTED_GPU" = "true" ]; then \
+RUN if [ "$SWAY_UNSUPPORTED_GPU" = "true" ]; then \
     sed -i 's/sway &/sway --unsupported-gpu \&/' /entrypoint_user.sh; \
     fi
 

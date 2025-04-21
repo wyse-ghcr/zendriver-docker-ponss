@@ -2,7 +2,7 @@ services:
   app:
     build:
       args:
-        WAYVNC_UNSUPPORTED_GPU: true
+        SWAY_UNSUPPORTED_GPU: true
     environment:
       - RENDER_GROUP_GID=
     deploy:
@@ -11,4 +11,4 @@ services:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [ gpu ]
+              capabilities: [gpu]
