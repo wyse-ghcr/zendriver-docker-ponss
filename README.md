@@ -27,6 +27,8 @@ After forking or cloning the repository, you may need to adjust the configuratio
 
 ### Instructions
 
+#### AMD/Intel GPU
+
 1. First, identify the DRM rendering node under `/dev/dri` which we will use to give Docker access to our GPU
 
    ```
@@ -55,39 +57,39 @@ After making this change, you should be able to run the demo app with
 docker compose up --build app
 ```
 
-#### Nvidia driver
+#### NVIDIA GPU
 
-Sway currently does not officially support nvidia (proprietary) driver.
-Despite some error messages, it might just work properly.
+Sway currently does not officially support the Nvidia proprietary driver. However, some users have had success running the Docker container on Nvidia systems using the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
-1. Install `nvidia-container-toolkit` and configure it for docker.
+1. Install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) and configure it for docker.
 
 2. Run the demo app with
 
 ```sh
-docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up --build app   
+docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up --build app
 ```
 
-#### Chrome hardware acceleration
+### Enabling Chrome hardware acceleration
 
-Google-chrome might have limited support for some GPU drivers and thus disable hardware acceleration by default.
-visit chrome://gpu/ to check.
+Google Chrome has limited support for some GPU drivers and thus may disable hardware acceleration by default. Connect to VNC, then visit `chrome://gpu/` in the browser to check.
 
-You might want to install the latest google-chrome to see if it helps by building a local swayvnc-chrome image or rerun the chrome install step at the beginning of the docker build process.
+If you find that hardware acceleration is disabled, one of the following steps may help:
 
-Optionally, you can force enable hardware acceleration by adding this browser arg `--ignore-gpu-blocklist`.
+1. Ensure you are using the latest version of Google Chrome. You can do this by either:
+   1. Building a local `swayvnc-chrome` image, or
+   2. Rerun the Chrome install step at the beginning of the docker build process
+2. Force enable hardware acceleration by setting the `--ignore-gpu-blocklist` browser arg.
+3. Enable XWayland, which may have better support than native Wayland rendering:
 
-You can also try to enable Xwayland for which google-chrome might have better support right now.
+   1. In you docker-compose file, set the build arg `ENABLE_XWAYLAND`:
 
-1. In you docker-compose file, add a build arg `ENABLE_XWAYLAND`:
+      ```yaml
+      build:
+        args:
+          ENABLE_XWAYLAND: true
+      ```
 
-   ```yaml
-   build:
-      args:
-         ENABLE_XWAYLAND: true
-   ```
-
-2. Either remove the browser arg `--ozone-platform=wayland` or replace it with `--ozone-platform=x11`.
+   2. Remove the browser arg `--ozone-platform=wayland` or replace it with `--ozone-platform=x11`.
 
 ## Usage
 
