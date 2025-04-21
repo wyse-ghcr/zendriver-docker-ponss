@@ -1,5 +1,37 @@
 FROM ghcr.io/stephanlensky/swayvnc-chrome:latest
 
+ARG ENABLE_XWAYLAND
+
+# install xwayland
+RUN if [ "$ENABLE_XWAYLAND" = "true" ]; then \
+    apt-get update && \
+    apt-get -y install xwayland && \
+    Xwayland -version && \
+    echo "Xwayland installed."; \
+    else \
+    echo "Xwayland installation skipped."; \
+    fi
+
+# set DISPLAY for xwayland
+RUN if [ "$ENABLE_XWAYLAND" = "true" ]; then \
+    sed -i '/^export XDG_RUNTIME_DIR/i \
+    export DISPLAY=${DISPLAY:-:0}' \
+    /entrypoint_user.sh; \
+    fi
+
+# add `xwayland enable` to sway config
+RUN if [ "$ENABLE_XWAYLAND" = "true" ]; then \
+    sed -i 's/xwayland disable/xwayland enable/' \
+    /home/$DOCKER_USER/.config/sway/config; \
+    fi
+
+ARG WAYVNC_UNSUPPORTED_GPU
+
+# add `--unsupported-gpu` flag to sway command
+RUN if [ "$WAYVNC_UNSUPPORTED_GPU" = "true" ]; then \
+    sed -i 's/sway &/sway --unsupported-gpu \&/' /entrypoint_user.sh; \
+    fi
+
 ENV PYTHONUNBUFFERED=1
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -37,5 +69,7 @@ RUN --mount=type=cache,target=/home/$DOCKER_USER/.cache/uv,uid=$PUID,gid=$PGID \
     uv sync --frozen
 
 USER root
+
 # Pass custom command to entrypoint script provided by the base image
-ENTRYPOINT ["/entrypoint.sh", ".venv/bin/python", "app/main.py"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD [".venv/bin/python", "-m" ,"app.main"]
