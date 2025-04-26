@@ -13,18 +13,6 @@ async def start_browser() -> zd.Browser:
     return browser
 
 
-async def get_browserscan_bot_detection_results(page: zd.Tab) -> str:
-    element = await page.find_element_by_text("Test Results:")
-    if (
-        element is None
-        or element.parent is None
-        or not isinstance(element.parent.children[-1], zd.Element)
-    ):
-        return "element not found"
-
-    return element.parent.children[-1].text
-
-
 async def main() -> None:
     print(f"Zendriver Docker demo (zendriver {zd.__version__})")
     chrome_version = " ".join(
@@ -44,17 +32,13 @@ async def main() -> None:
     browser = await start_browser()
     print("Browser successfully started!")
 
-    print("Visiting https://www.browserscan.net/bot-detection")
-    page = await browser.get("https://www.browserscan.net/bot-detection")
+    print("Visiting https://example.com...")
+    page = await browser.get("https://example.com")
+    print("Page loaded successfully!\n")
 
-    print("Getting test results...\n")
-    result = await get_browserscan_bot_detection_results(page)
-    if result == "Normal":
-        print(f"Test passed! Result: {result}")
-    else:
-        print(
-            f"Test failed! ({result=}) Check browser window with VNC viewer to see what happened."
-        )
+    await page.update_target()
+    assert page.target
+    print("Page title:", page.target.title)
 
     print(
         (
