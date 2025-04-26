@@ -14,7 +14,6 @@ services:
       - WAYVNC_USERNAME=wayvnc
       - WAYVNC_PASSWORD=wayvnc
     devices:
-      - /dev/kfd
       - /dev/dri
     security_opt:
       - seccomp:unconfined

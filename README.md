@@ -57,7 +57,13 @@ After making this change, you should be able to run the demo app with
 docker compose up --build app
 ```
 
-#### NVIDIA GPU
+For AMD GPUs, make sure to use the [`docker-compose.amd.yml`](https://github.com/stephanlensky/zendriver-docker/blob/main/docker-compose.amd.yml) overrides file:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.amd.yml up --build app
+```
+
+#### Nvidia GPU
 
 Sway currently does not officially support the Nvidia proprietary driver. However, some users have had success running the Docker container on Nvidia systems using the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
