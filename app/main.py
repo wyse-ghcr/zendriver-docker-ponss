@@ -25,6 +25,7 @@ async def start_browser() -> zd.Browser:
         ubo_lit_zip.extractall("ubo_lite")
         ubo_lit_zip.close()
         print("uBlock Origin Lite successfully downloaded and unzipped!")
+    print(f"Root user: {os.geteuid() == 0}")
     browser = await zd.start(
         browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland", "--load-extension=/app/ubo_lite"],
         no_sandbox=os.geteuid() == 0
