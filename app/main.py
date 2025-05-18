@@ -41,7 +41,7 @@ async def refresh_codes(page) -> None:
     print("Codes refreshed!")
 
 def run_refresh_codes(page) -> None:
-    asyncio.create_task(refresh_codes(page))
+    asyncio.get_running_loop().create_task(refresh_codes(page))
 
 async def main() -> None:
     print(f"Zendriver Docker Ponss Starting (zendriver {zd.__version__})")
