@@ -66,7 +66,9 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Sync the project's dependencies and install the project
 RUN --mount=type=cache,target=/home/$DOCKER_USER/.cache/uv,uid=$PUID,gid=$PGID \
-    uv sync --frozen
+    uv sync
+
+RUN uv lock
 
 USER root
 

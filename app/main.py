@@ -1,20 +1,48 @@
 import asyncio
 import os
 import subprocess
+import requests
+import zipfile
+import schedule
+import time
+import random
 
 import zendriver as zd
 
 
 async def start_browser() -> zd.Browser:
+    if not os.path.isdir("ubo_lite"):
+        print("Downloading latest uBlock Origin Lite release...")
+        resp = requests.get("https://api.github.com/repos/uBlockOrigin/uBOL-home/releases/latest")
+        data = resp.json()
+        for element in data["assets"]:
+            if "chromium" in element["browser_download_url"]:
+                ubo_lite_zip_resp = requests.get(element["browser_download_url"])
+                with open("ubo_lite.zip", "wb") as file:
+                    file.write(ubo_lite_zip_resp.content)
+        os.mkdir("ubo_lite")
+        ubo_lit_zip = zipfile.ZipFile("ubo_lite.zip")
+        ubo_lit_zip.extractall("ubo_lite")
+        ubo_lit_zip.close()
+        print("uBlock Origin Lite successfully downloaded and unzipped!")
     browser = await zd.start(
-        # use wayland for rendering instead of default X11 backend
-        browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland"],
+        browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland", "--load-extension=/app/ubo_lite"],
     )
     return browser
 
+async def refresh_codes(page) -> None:
+    delay = random.randint(1, 3600)
+    print(f"Refreshing codes in {delay/60} min...")
+    await asyncio.sleep(delay)
+    refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
+    await refresh_codes_button.click()
+    print("Codes refreshed!")
+
+def run_refresh_codes(page) -> None:
+    asyncio.create_task(refresh_codes(page))
 
 async def main() -> None:
-    print(f"Zendriver Docker demo (zendriver {zd.__version__})")
+    print(f"Zendriver Docker Ponss Starting (zendriver {zd.__version__})")
     chrome_version = " ".join(
         (
             subprocess.run(
@@ -32,24 +60,34 @@ async def main() -> None:
     browser = await start_browser()
     print("Browser successfully started!")
 
-    print("Visiting https://example.com...")
-    page = await browser.get("https://example.com")
-    print("Page loaded successfully!\n")
+    print("Opening login page...")
+    page = await browser.get("https://www.ponss.it/account/login")
+    await asyncio.sleep(0.5)
+    print("Login page successfully opened!")
+    username_input = await page.select("#UserName")
+    password_input = await page.select("#Password")
+    login_button = await page.select("form[action='/account/login'] > button[type='submit']")
+    print(f"Logging in user ({os.environ["PONSS_USER"]})...")
+    await username_input.send_keys(os.environ["PONSS_USER"])
+    await password_input.send_keys(os.environ["PONSS_PASS"])
+    await login_button.click()
+    await asyncio.sleep(0.5)
+    print("User successfully logged in!")
+    page = await browser.get("https://www.ponss.it/account/codes")
+    await asyncio.sleep(0.5)
+    await page.evaluate("window.confirm = function(msg) { return true; };")
+    print("Scheduling jobs...")
+    schedule.every().day.at(os.environ["PONSS_REFRESH_TIME_01"]).do(run_refresh_codes, page)
+    schedule.every().day.at(os.environ["PONSS_REFRESH_TIME_02"]).do(run_refresh_codes, page)
+    schedule.every().day.at(os.environ["PONSS_REFRESH_TIME_03"]).do(run_refresh_codes, page)
+    schedule.every().day.at(os.environ["PONSS_REFRESH_TIME_04"]).do(run_refresh_codes, page)
+    print("Jobs scheduled!")
 
-    await page.update_target()
-    assert page.target
-    print("Page title:", page.target.title)
+    print("Zendriver Docker Ponss successfully started!")
 
-    print(
-        (
-            "\nDemo complete.\n"
-            "- Try using a VNC viewer to visit the Docker container's built-in VNC server at http://localhost:5910.\n"
-            "- VNC allows for easy debugging and inspection of the browser window.\n"
-            "- For some tasks which may not be fully possible to automate, it can also be used to manually interact with the browser.\n\n"
-            "When you are done, press Ctrl+C to exit the demo."
-        )
-    )
-    await asyncio.Future()  # wait forever
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
 
 
 if __name__ == "__main__":

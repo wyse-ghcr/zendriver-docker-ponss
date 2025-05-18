@@ -4,10 +4,8 @@ services:
       context: .
     ports:
       - 5910:5910
-    volumes:
-      - swayvnc-wayvnc-certs:/certs
     environment:
-      - RENDER_GROUP_GID=107 # replace with GID of the group which owns the /dev/dri/renderD128 device
+      - RENDER_GROUP_GID=488 # replace with GID of the group which owns the /dev/dri/renderD128 device
       - SWAY_RESOLUTION=1920x1080
       - WAYVNC_PORT=5910
       - WAYVNC_ENABLE_AUTH=true
@@ -17,6 +15,3 @@ services:
       - /dev/dri
     security_opt:
       - seccomp:unconfined
-
-volumes:
-  swayvnc-wayvnc-certs:
