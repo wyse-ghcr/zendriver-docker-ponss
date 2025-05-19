@@ -1,4 +1,5 @@
 import asyncio
+import nest_asyncio
 import os
 import subprocess
 import requests
@@ -34,16 +35,17 @@ async def start_browser() -> zd.Browser:
 
 async def refresh_codes(page) -> None:
     delay = random.randint(1, 3600)
-    print(f"Refreshing codes in {delay/60} min...")
+    print("Refreshing codes in {:.2f} min...".format(delay/60))
     await asyncio.sleep(delay)
     refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
     await refresh_codes_button.click()
     print("Codes refreshed!")
 
 def run_refresh_codes(page) -> None:
-    asyncio.get_running_loop().create_task(refresh_codes(page))
+    asyncio.run(refresh_codes(page))
 
 async def main() -> None:
+    nest_asyncio.apply()
     print(f"Zendriver Docker Ponss Starting (zendriver {zd.__version__})")
     chrome_version = " ".join(
         (

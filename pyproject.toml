@@ -8,6 +8,7 @@ dependencies = [
     "zendriver",
     "requests",
     "schedule",
+    "nest_asyncio",
 ]
 
 [tool.uv]
