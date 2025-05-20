@@ -34,9 +34,9 @@ async def start_browser() -> zd.Browser:
     return browser
 
 async def refresh_codes(page) -> None:
-    delay = random.randint(1, 3600)
+    delay = random.randint(int(os.environ["RANDOM_DELAY_MIN"]), int(os.environ["RANDOM_DELAY_MAX"]))
     print("Refreshing codes in {:.2f} min...".format(delay/60))
-    await asyncio.sleep(delay)
+    await page.wait(delay)
     refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
     await refresh_codes_button.click()
     print("Codes refreshed!")
@@ -66,7 +66,7 @@ async def main() -> None:
 
     print("Opening login page...")
     page = await browser.get("https://www.ponss.it/account/login")
-    await asyncio.sleep(0.5)
+    await page.wait(0.5)
     print("Login page successfully opened!")
     username_input = await page.select("#UserName")
     password_input = await page.select("#Password")
@@ -75,10 +75,10 @@ async def main() -> None:
     await username_input.send_keys(os.environ["PONSS_USER"])
     await password_input.send_keys(os.environ["PONSS_PASS"])
     await login_button.click()
-    await asyncio.sleep(0.5)
-    print("User successfully logged in!")
+    await page.wait(0.5)
     page = await browser.get("https://www.ponss.it/account/codes")
-    await asyncio.sleep(0.5)
+    await page.wait(0.5)
+    print("User successfully logged in!")
     await page.evaluate("window.confirm = function(msg) { return true; };")
     print("Scheduling jobs...")
     schedule.every().day.at(os.environ["PONSS_REFRESH_TIME_01"]).do(run_refresh_codes, page)
@@ -91,7 +91,7 @@ async def main() -> None:
 
     while True:
         schedule.run_pending()
-        await asyncio.sleep(1)
+        await page.wait(1)
 
 
 if __name__ == "__main__":
