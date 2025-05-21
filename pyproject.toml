@@ -7,8 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "zendriver",
     "requests",
-    "schedule",
-    "nest_asyncio",
+    "apscheduler",
 ]
 
 [tool.uv]
