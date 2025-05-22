@@ -33,15 +33,10 @@ async def start_browser() -> zd.Browser:
     return browser
 
 async def refresh_codes(page) -> None:
-    delay = random.randint(int(os.environ["RANDOM_DELAY_MIN"]), int(os.environ["RANDOM_DELAY_MAX"]))
-    print("Refreshing codes in {:.2f} min...".format(delay/60))
-    await asyncio.sleep(delay)
+    print("Refreshing codes...")
     refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
     await refresh_codes_button.click()
     print("Codes refreshed!")
-
-def run_refresh_codes(page) -> None:
-    asyncio.run(refresh_codes(page))
 
 async def main() -> None:
     print(f"Zendriver Docker Ponss Starting (zendriver {zd.__version__})")
@@ -80,10 +75,10 @@ async def main() -> None:
     await page.evaluate("window.confirm = function(msg) { return true; };")
     print("Scheduling jobs...")
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_01"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_01"].split(":")[1], args=[page])
-    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_02"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_02"].split(":")[1], args=[page])
-    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_03"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_03"].split(":")[1], args=[page])
-    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_04"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_04"].split(":")[1], args=[page])
+    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_01"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_01"].split(":")[1], args=[page], jitter=int(os.environ["JOB_JITTER"]))
+    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_02"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_02"].split(":")[1], args=[page], jitter=int(os.environ["JOB_JITTER"]))
+    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_03"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_03"].split(":")[1], args=[page], jitter=int(os.environ["JOB_JITTER"]))
+    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_04"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_04"].split(":")[1], args=[page], jitter=int(os.environ["JOB_JITTER"]))
     scheduler.start()
     print("Jobs scheduled!")
     print("Zendriver Docker Ponss successfully started!")
