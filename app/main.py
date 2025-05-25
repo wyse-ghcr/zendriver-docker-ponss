@@ -26,10 +26,16 @@ async def start_browser() -> zd.Browser:
         ubo_lit_zip.close()
         print("uBlock Origin Lite successfully downloaded and unzipped!")
     print(f"Root user: {os.geteuid() == 0}")
-    browser = await zd.start(
-        browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland", "--load-extension=/app/ubo_lite"],
-        no_sandbox=os.geteuid() == 0
-    )
+    browser = None
+    while browser is None:
+        try:
+            browser = await zd.start(
+                browser_args=["--enable-features=UseOzonePlatform", "--ozone-platform=wayland", "--load-extension=/app/ubo_lite"],
+                no_sandbox=os.geteuid() == 0
+            )
+        except:
+            print("Failed to start browser, retrying...")
+            await asyncio.sleep(4)
     return browser
 
 async def refresh_codes() -> None:
