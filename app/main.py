@@ -45,7 +45,7 @@ async def refresh_codes() -> None:
 
     print("Opening login page...")
     page = await browser.get("https://www.ponss.it/account/login")
-    await page.wait(0.5)
+    await page.wait(int(os.environ["PAGE_LOAD_DELAY"]))
     print("Login page successfully opened!")
     username_input = await page.select("#UserName")
     password_input = await page.select("#Password")
@@ -54,16 +54,16 @@ async def refresh_codes() -> None:
     await username_input.send_keys(os.environ["PONSS_USER"])
     await password_input.send_keys(os.environ["PONSS_PASS"])
     await login_button.click()
-    await page.wait(0.5)
+    await page.wait(int(os.environ["PAGE_LOAD_DELAY"]))
     page = await browser.get("https://www.ponss.it/account/codes")
-    await page.wait(0.5)
+    await page.wait(int(os.environ["PAGE_LOAD_DELAY"]))
     print("User successfully logged in!")
 
     print("Refreshing codes...")
     await page.evaluate("window.confirm = function(msg) { return true; };")
     refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
     await refresh_codes_button.click()
-    await page.wait(2)
+    await page.wait(int(os.environ["PAGE_LOAD_DELAY"]))
     print("Codes refreshed!")
 
     print("Closing browser...")
