@@ -63,6 +63,7 @@ async def refresh_codes() -> None:
     await page.evaluate("window.confirm = function(msg) { return true; };")
     refresh_codes_button = await page.select("form[action='/account/updateusercodes'] > button[type='submit']")
     await refresh_codes_button.click()
+    await page.wait(2)
     print("Codes refreshed!")
 
     print("Closing browser...")
