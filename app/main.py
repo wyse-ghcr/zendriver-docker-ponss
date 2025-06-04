@@ -91,6 +91,7 @@ async def main() -> None:
     scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_02"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_02"].split(":")[1], jitter=int(os.environ["JOB_JITTER"]))
     scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_03"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_03"].split(":")[1], jitter=int(os.environ["JOB_JITTER"]))
     scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_04"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_04"].split(":")[1], jitter=int(os.environ["JOB_JITTER"]))
+    scheduler.add_job(refresh_codes, 'cron', hour=os.environ["PONSS_REFRESH_TIME_05"].split(":")[0], minute=os.environ["PONSS_REFRESH_TIME_05"].split(":")[1], jitter=int(os.environ["JOB_JITTER"]))
     scheduler.start()
     print("Jobs scheduled!")
     print("Zendriver Docker Ponss successfully started!")
